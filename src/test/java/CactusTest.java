@@ -1,6 +1,7 @@
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CactusTest {
 
@@ -21,29 +22,21 @@ public class CactusTest {
 
     @Test
     public void testNullSpecies() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Cactus("Family", "Genus", null, "Subspecies", "Traits", "10", "ID");
-        });
+        assertThrows(IllegalArgumentException.class, () -> new Cactus("Family", "Genus", null, "Subspecies", "Traits", "10", "ID"));
     }
 
     @Test
     public void testNullGenus() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Cactus("Family", null, "Species", "Subspecies", "Traits", "10", "ID");
-        });
+        assertThrows(IllegalArgumentException.class, () -> new Cactus("Family", null, "Species", "Subspecies", "Traits", "10", "ID"));
     }
 
     @Test
     public void testNullFamily() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Cactus(null, "Genus", "Species", "Subspecies", "Traits", "10", "ID");
-        });
+        assertThrows(IllegalArgumentException.class, () -> new Cactus(null, "Genus", "Species", "Subspecies", "Traits", "10", "ID"));
     }
 
     @Test
     public void testNullCactusID() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            new Cactus("Family", "Genus", "Species", "Subspecies", "Traits", "10", null);
-        });
+        assertThrows(IllegalArgumentException.class, () -> new Cactus("Family", "Genus", "Species", "Subspecies", "Traits", "10", null));
     }
 }

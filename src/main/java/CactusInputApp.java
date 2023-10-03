@@ -1,11 +1,10 @@
 import javax.swing.*;
-import java.awt.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
 import java.util.UUID;
 
 public class CactusInputApp extends JFrame {
-    private CactusManagementService cactusService;
+    private final CactusManagementService cactusService;
     private JTextField idTextField;
     private JTextField speciesTextField;
     private JTextField genusTextField;

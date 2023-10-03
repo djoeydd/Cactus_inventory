@@ -2,7 +2,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CactusManagementService {
-    private Map<String, Cactus> cactusMap = new HashMap<>();
+    private final Map<String, Cactus> cactusMap = new HashMap<>();
 
     public void addCactus(Cactus cactus){
         if(cactusMap.containsKey(cactus.getCactusID())){

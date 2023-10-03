@@ -14,36 +14,28 @@ public class CactusManagementServiceTest {
         assertEquals(validCactus, cactusManagementService.getCactusByID("1"));
 
         //Add cactus with duplicate ID
-        assertThrows(IllegalArgumentException.class, () -> {
-            cactusManagementService.addCactus(validCactus);
-        });
+        assertThrows(IllegalArgumentException.class, () -> cactusManagementService.addCactus(validCactus));
     }
 
     @Test
     public void testAddCactusWithEmptySpecies() {
         CactusManagementService cactusManagementService = new CactusManagementService();
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            cactusManagementService.addCactus(new Cactus("family", "genus", "", "subspecies", "traits", "size", "ID"));
-        });
+        assertThrows(IllegalArgumentException.class, () -> cactusManagementService.addCactus(new Cactus("family", "genus", "", "subspecies", "traits", "size", "ID")));
     }
 
     @Test
     public void testAddCactusWithEmptyGenus() {
         CactusManagementService cactusManagementService = new CactusManagementService();
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            cactusManagementService.addCactus(new Cactus("family", "", "species", "subspecies", "traits", "size", "ID"));
-        });
+        assertThrows(IllegalArgumentException.class, () -> cactusManagementService.addCactus(new Cactus("family", "", "species", "subspecies", "traits", "size", "ID")));
     }
 
     @Test
     public void testAddCactusWithEmptyFamily() {
         CactusManagementService cactusManagementService = new CactusManagementService();
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            cactusManagementService.addCactus(new Cactus("", "genus", "species", "subspecies", "traits", "size", "ID"));
-        });
+        assertThrows(IllegalArgumentException.class, () -> cactusManagementService.addCactus(new Cactus("", "genus", "species", "subspecies", "traits", "size", "ID")));
     }
 
     @Test
@@ -62,9 +54,7 @@ public class CactusManagementServiceTest {
         assertNull(cactusManagementService.getCactusByID("2"));
 
         //Deleting non-existing cactus
-        assertThrows(IllegalArgumentException.class, () -> {
-            cactusManagementService.deleteCactus("3");
-        });
+        assertThrows(IllegalArgumentException.class, () -> cactusManagementService.deleteCactus("3"));
     }
 
     @Test
