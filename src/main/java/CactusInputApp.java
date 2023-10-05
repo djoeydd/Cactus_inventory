@@ -2,24 +2,29 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.UUID;
+import javax.swing.table.DefaultTableModel;
 
 public class CactusInputApp extends JFrame {
     private final CactusManagementService cactusService;
-    private JTextField idTextField;
-    private JTextField speciesTextField;
-    private JTextField genusTextField;
-    private JTextField familyTextField;
-    private JTextField subSpeciesTextField;
-    private JTextField traitsTextField;
-    private JTextField sizeTextField;
+    private final JTextField idTextField;
+    private final JTextField speciesTextField;
+    private final JTextField genusTextField;
+    private final JTextField familyTextField;
+    private final JTextField subSpeciesTextField;
+    private final JTextField traitsTextField;
+    private final JTextField sizeTextField;
+    private DefaultTableModel tableModel;
 
     public CactusInputApp() {
-        cactusService = new CactusManagementService();
+        // Initialize the table model at the beginning of your constructor
+        tableModel = new DefaultTableModel();
+
+        cactusService = new CactusManagementService(tableModel);
 
         // Set up the main application window
         setTitle("Cactus Input");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(930, 600);
 
         // Create input fields, labels, and buttons
         JLabel titleLabel = new JLabel("Cactus Inventory");
@@ -28,37 +33,37 @@ public class CactusInputApp extends JFrame {
         titleLabel.setForeground(Color.white);
 
         JLabel idLabel = new JLabel("ID Number:");
-        JTextField idTextField = new JTextField(20);
+        idTextField = new JTextField(20);
         idTextField.setBackground(new Color(176, 217, 177));
         idLabel.setForeground(Color.white);
 
         JLabel speciesLabel = new JLabel("Species:");
-        JTextField speciesTextField = new JTextField(20);
+        speciesTextField = new JTextField(20);
         speciesTextField.setBackground(new Color(176, 217, 177));
         speciesLabel.setForeground(Color.white);
 
         JLabel genusLabel = new JLabel("Genus:");
-        JTextField genusTextField = new JTextField(20);
+        genusTextField = new JTextField(20);
         genusTextField.setBackground(new Color(176, 217, 177));
         genusLabel.setForeground(Color.white);
 
         JLabel familyLabel = new JLabel("Family:");
-        JTextField familyTextField = new JTextField(20);
+        familyTextField = new JTextField(20);
         familyTextField.setBackground(new Color(176, 217, 177));
         familyLabel.setForeground(Color.white);
 
         JLabel subSpeciesLabel = new JLabel("Subspecies:");
-        JTextField subSpeciesTextField = new JTextField(20);
+        subSpeciesTextField = new JTextField(20);
         subSpeciesTextField.setBackground(new Color(176, 217, 177));
         subSpeciesLabel.setForeground(Color.white);
 
         JLabel traitsLabel = new JLabel("Traits:");
-        JTextField traitsTextField = new JTextField(20);
+        traitsTextField = new JTextField(20);
         traitsTextField.setBackground(new Color(176, 217, 177));
         traitsLabel.setForeground(Color.white);
 
         JLabel sizeLabel = new JLabel("Size (cm):");
-        JTextField sizeTextField = new JTextField(20);
+        sizeTextField = new JTextField(20);
         sizeTextField.setBackground(new Color(176, 217, 177));
         sizeLabel.setForeground(Color.white);
 
@@ -152,6 +157,19 @@ public class CactusInputApp extends JFrame {
         gbc.gridwidth = 2; // Span 2 columns
         inputPanel.add(addButton, gbc);
 
+        // Create a button to generate a random ID
+        JButton generateIdButton = new JButton("Generate Random ID");
+        gbc.gridy++;
+        inputPanel.add(generateIdButton, gbc);
+
+        // Add an action listener to the "Generate Random ID" button
+        generateIdButton.addActionListener(e -> {
+            // Generate a unique ID using UUID and populate the ID text field
+            clearInputFields();
+            String randomId = generateUniqueId();
+            idTextField.setText(randomId);
+        });
+
         // Create and add the "Delete" button
         JButton deleteButton = new JButton("Delete");
         gbc.gridy++;
@@ -165,6 +183,7 @@ public class CactusInputApp extends JFrame {
         // Add an action listener to the "Submit" button
         addButton.addActionListener(e -> {
             // Retrieve data from input fields
+            String cactusID = idTextField.getText();
             String species = speciesTextField.getText();
             String genus = genusTextField.getText();
             String family = familyTextField.getText();
@@ -173,13 +192,15 @@ public class CactusInputApp extends JFrame {
             String sizeCm = sizeTextField.getText();
 
             // Create a new Cactus object with the input data
-            Cactus cactus = new Cactus(species, genus, family, subspecies, traits, sizeCm, generateUniqueId());
+            Cactus cactus = new Cactus(species, genus, family, subspecies, traits, sizeCm, cactusID);
 
             // Add the cactus to the service
             cactusService.addCactus(cactus);
 
             // Optionally, provide feedback to the user
             JOptionPane.showMessageDialog(this, "Cactus added successfully!");
+            cactusService.displayAllCactiInTable(tableModel);
+            clearInputFields();
         });
 
         // Add action listeners to the "Delete" and "Update" buttons
@@ -188,6 +209,7 @@ public class CactusInputApp extends JFrame {
             if (!cactusID.isEmpty()) {
                 cactusService.deleteCactus(cactusID);
                 JOptionPane.showMessageDialog(this, "Cactus deleted successfully!");
+                cactusService.displayAllCactiInTable(tableModel);
                 clearInputFields();
             } else {
                 JOptionPane.showMessageDialog(this, "Please enter a Cactus ID to delete.");
@@ -204,6 +226,7 @@ public class CactusInputApp extends JFrame {
                         try {
                             cactusService.updateCactus(cactusID, fieldToUpdate, updatedValue);
                             JOptionPane.showMessageDialog(this, "Cactus updated successfully!");
+                            cactusService.displayAllCactiInTable(tableModel);
                             clearInputFields();
                         } catch (IllegalArgumentException ex) {
                             JOptionPane.showMessageDialog(this, "Invalid field name or value. Update failed.");
@@ -215,12 +238,42 @@ public class CactusInputApp extends JFrame {
             }
         });
 
-        // Add the input panel to the frame's content pane
-        getContentPane().add(inputPanel, BorderLayout.CENTER);
+        // Create a panel for the table
+        JPanel tablePanel = new JPanel(new BorderLayout());
+
+        // Create a table with a default table model
+        tableModel = new DefaultTableModel();
+        JTable cactusTable = new JTable(tableModel);
+
+        // Add columns to the table model
+        tableModel.addColumn("ID");
+        tableModel.addColumn("Species");
+        tableModel.addColumn("Genus");
+        tableModel.addColumn("Family");
+        tableModel.addColumn("Subspecies");
+        tableModel.addColumn("Traits");
+        tableModel.addColumn("Size (cm)");
+
+        // Create a scroll pane for the table
+        JScrollPane scrollPane = new JScrollPane(cactusTable);
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Create a main panel using BorderLayout
+        JPanel mainPanel = new JPanel(new BorderLayout());
+
+        // Add the input panel to the main panel on the left
+        mainPanel.add(inputPanel, BorderLayout.WEST);
+
+        // Add the table panel to the main panel on the right
+        mainPanel.add(tablePanel, BorderLayout.EAST);
+
+        // Add the main panel to the frame's content pane
+        getContentPane().add(mainPanel, BorderLayout.CENTER);
     }
 
     private void clearInputFields() {
 
+        idTextField.setText("");
         speciesTextField.setText("");
         genusTextField.setText("");
         familyTextField.setText("");
@@ -231,7 +284,6 @@ public class CactusInputApp extends JFrame {
 
     private String generateUniqueId() {
         // Generate a unique ID using UUID (Universally Unique Identifier)
-        // The chances of collision are extremely low with UUIDs.
         return UUID.randomUUID().toString();
     }
 
