@@ -1,15 +1,20 @@
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.table.DefaultTableModel;
 
 public class CactusManagementService {
     private final Map<String, Cactus> cactusMap = new HashMap<>();
+
+    public CactusManagementService() {
+    }
+    public CactusManagementService(DefaultTableModel tableModel) {
+    }
 
     public void addCactus(Cactus cactus){
         if(cactusMap.containsKey(cactus.getCactusID())){
             throw new IllegalArgumentException("Cactus ID already in use");
         }
         cactusMap.put(cactus.getCactusID(), cactus);
-        displayAllCacti();
     }
 
     public void deleteCactus(String cactusID){
@@ -37,21 +42,23 @@ public class CactusManagementService {
         return cactusMap.get(cactusID);
     }
 
-    public void displayAllCacti() {
-        System.out.println("All Cacti:");
+    public void displayAllCactiInTable(DefaultTableModel tableModel) {
+        tableModel.setRowCount(0); // Clear existing rows
 
         for (Map.Entry<String, Cactus> entry : cactusMap.entrySet()) {
             String cactusID = entry.getKey();
             Cactus cactus = entry.getValue();
 
-            System.out.println("Cactus ID: " + cactusID);
-            System.out.println("Species: " + cactus.getSpecies());
-            System.out.println("Genus: " + cactus.getGenus());
-            System.out.println("Family: " + cactus.getFamily());
-            System.out.println("Subspecies: " + cactus.getSubspecies());
-            System.out.println("Traits: " + cactus.getTraits());
-            System.out.println("Size (cm): " + cactus.getSizeCm());
-            System.out.println();
+            // Add a new row to the table model with cactus data
+            tableModel.addRow(new Object[]{
+                    cactusID,
+                    cactus.getSpecies(),
+                    cactus.getGenus(),
+                    cactus.getFamily(),
+                    cactus.getSubspecies(),
+                    cactus.getTraits(),
+                    cactus.getSizeCm()
+            });
         }
     }
 }
