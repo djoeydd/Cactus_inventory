@@ -6,7 +6,6 @@ public class CactusManagementService {
     private final Map<String, Cactus> cactusMap = new HashMap<>();
 
     public CactusManagementService() {
-
     }
     public CactusManagementService(DefaultTableModel tableModel) {
     }

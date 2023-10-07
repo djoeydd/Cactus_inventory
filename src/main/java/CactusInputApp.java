@@ -6,13 +6,14 @@ import javax.swing.table.DefaultTableModel;
 
 public class CactusInputApp extends JFrame {
     private final CactusManagementService cactusService;
-    private final JTextField idTextField;
-    private final JTextField speciesTextField;
-    private final JTextField genusTextField;
-    private final JTextField familyTextField;
-    private final JTextField subSpeciesTextField;
-    private final JTextField traitsTextField;
-    private final JTextField sizeTextField;
+    private JTextField idTextField;
+    private JTextField speciesTextField;
+    private JTextField genusTextField;
+    private JTextField familyTextField;
+    private JTextField subSpeciesTextField;
+    private JTextField traitsTextField;
+    private JTextField sizeTextField;
+    private JTable cactusTable;
     private DefaultTableModel tableModel;
 
     public CactusInputApp() {
@@ -191,16 +192,33 @@ public class CactusInputApp extends JFrame {
             String traits = traitsTextField.getText();
             String sizeCm = sizeTextField.getText();
 
-            // Create a new Cactus object with the input data
-            Cactus cactus = new Cactus(species, genus, family, subspecies, traits, sizeCm, cactusID);
+            if (!cactusID.isEmpty() && !species.isEmpty() && !genus.isEmpty() && !family.isEmpty()) {
+                // Create a new Cactus object with the input data
+                Cactus cactus = new Cactus(species, genus, family, subspecies, traits, sizeCm, cactusID);
 
-            // Add the cactus to the service
-            cactusService.addCactus(cactus);
+                // Add the cactus to the service
+                cactusService.addCactus(cactus);
 
-            // Optionally, provide feedback to the user
-            JOptionPane.showMessageDialog(this, "Cactus added successfully!");
-            cactusService.displayAllCactiInTable(tableModel);
-            clearInputFields();
+                // Optionally, provide feedback to the user
+                JOptionPane.showMessageDialog(this, "Cactus added successfully!");
+                cactusService.displayAllCactiInTable(tableModel);
+                clearInputFields();
+            }
+
+            else {
+                if (cactusID.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter a valid Cactus ID.");
+                }
+                if (species.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter a valid cactus species.");
+                }
+                if (family.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter a valid family.");
+                }
+                if (genus.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Please enter a valid cactus genus.");
+                }
+            }
         });
 
         // Add action listeners to the "Delete" and "Update" buttons
@@ -243,7 +261,7 @@ public class CactusInputApp extends JFrame {
 
         // Create a table with a default table model
         tableModel = new DefaultTableModel();
-        JTable cactusTable = new JTable(tableModel);
+        cactusTable = new JTable(tableModel);
 
         // Add columns to the table model
         tableModel.addColumn("ID");
@@ -284,6 +302,7 @@ public class CactusInputApp extends JFrame {
 
     private String generateUniqueId() {
         // Generate a unique ID using UUID (Universally Unique Identifier)
+        // The chances of collision are extremely low with UUIDs.
         return UUID.randomUUID().toString();
     }
 
